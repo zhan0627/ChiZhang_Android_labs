@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">ChiZhang Android labs</string>
-    <string name="hello_message">Hello world</string>
+    <string name="app_name">ChiZhang\'s andriod labs</string>
+    <string name="hello_message">Hello world! </string>
     <string name="button_message">I am a button</string>
+    <string name="checkbox_message" translatable="false">I am a checkbox </string>
+    <string name="editmessage" translatable="false">I am an editText</string>
+    <string name="hinttext" translatable="false">write something here</string>
+    <string name="radio_message" translatable="false">I am a radio button</string>
 </resources>
