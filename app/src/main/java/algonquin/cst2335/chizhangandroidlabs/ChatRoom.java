@@ -124,13 +124,16 @@ public class ChatRoom extends AppCompatActivity {
 
                             messages.remove(position);
                             adt.notifyItemRemoved(position);
-
+                            db.delete(MyOpenHelper.TABLE_NAME, "_id=?", new String[] {Long.toString(removedMessage.getId())});
 
                             Snackbar.make(messageText, "you deleted message # " + position, Snackbar.LENGTH_LONG )
                                     .setAction("undo ", clk -> {
                                         messages.add(position, removedMessage);
                                         adt.notifyItemInserted(position);
-
+                                        db.execSQL("Insert into " + MyOpenHelper.TABLE_NAME + " values('" + removedMessage.getId() +
+                                                "','" + removedMessage.getMessage() +
+                                                "','" + removedMessage.getSendOrReceive() +
+                                                "','" + removedMessage.getTimeSent() + "');");
                                     })
                                     .show();
                         });
