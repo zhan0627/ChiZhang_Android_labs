@@ -11,10 +11,10 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     public static final int version = 1;
     public static final String TABLE_NAME = "Messages";
     public static final String col_message = "Message";//declare column name
-    public static final String col_send_receive = "SendOrReceive";
+    public static String col_send_receive = "SendOrReceive";
     public static final String col_time_sent = "TimeSent";
 
-    public MyOpenHelper( Context context ) {
+    public MyOpenHelper(Context context) {
         super(context, name, null, version);
         //that's all the constructor does
     }

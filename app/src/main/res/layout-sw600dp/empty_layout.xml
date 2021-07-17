@@ -7,13 +7,13 @@
 
 <FrameLayout
     android:id = "@+id/fragmentRoom"
-    android:background = "@color/my_primary"
+    android:background = "@color/white"
     android:layout_width="300dp"
     android:layout_height="match_parent"/>
 
 <FrameLayout
     android:id = "@+id/detailsRoom"
-    android:background = "@color/my_secondary"
+    android:background = "@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
 
