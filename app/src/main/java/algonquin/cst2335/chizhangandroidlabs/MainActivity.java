@@ -11,14 +11,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -67,43 +69,84 @@ public class MainActivity extends AppCompatActivity {
         Button forecastBtn=findViewById(R.id.forecastButton);
 
         forecastBtn.setOnClickListener(clk->{
+
+            String cityName=cityText.getText().toString();
+
+            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("getting forecast")
+                    .setMessage("we're calling people in " + cityName + " to look outside their window and tell us what's weather like over there. ")
+                    .setView(new ProgressBar(MainActivity.this))
+                    .show();
+
         Executor newThread=Executors.newSingleThreadExecutor();
         newThread.execute(()->{
         /*Thisrunsinaseparatethread*/
         try{
 
-        String cityName=cityText.getText().toString();
+
         String stringURL="https://api.openweathermap.org/data/2.5/weather?q="
-        +URLEncoder.encode(cityName,"UTF-8")
-        +"&appid=7e943c97096a9784391a981c4d878b22&units=metric";
+                        +URLEncoder.encode(cityName,"UTF-8")
+                        +"&appid=7e943c97096a9784391a981c4d878b22&units=metric&mode=xml";
 
         URL url=new URL(stringURL);
         HttpURLConnection urlConnection=(HttpURLConnection)url.openConnection();
         InputStream in=new BufferedInputStream(urlConnection.getInputStream());
+
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(false);
+        XmlPullParser xpp = factory.newPullParser();
+        xpp.setInput( in  , "UTF-8");
+
+            String description = null;
+            String iconName = null;
+            String current = null;
+            String min = null;
+            String max = null;
+            String humidity = null;
+
+            while(xpp.next()!=XmlPullParser.END_DOCUMENT){
+
+
+                switch(xpp.getEventType()){
+
+                    case XmlPullParser.START_TAG:
+
+                        if(xpp.getName().equals("temperature")){
+
+                            current = xpp.getAttributeValue(null, "value");  //this gets the current temperature
+
+                            min = xpp.getAttributeValue(null, "min"); //this gets the min temperature
+
+                            max = xpp.getAttributeValue(null, "max"); //this gets the max temperature
+
+                        }else if(xpp.getName().equals("weather")){
+
+                            description = xpp.getAttributeValue(null, "value");  //this gets the weather description
+
+                            iconName = xpp.getAttributeValue(null, "icon"); //this gets the icon name
+
+                        }else if(xpp.getName().equals("humidity")){
+
+                            humidity = xpp.getAttributeValue(null, "value");
+
+                        }
+
+
+                        break;
+                    case XmlPullParser.END_TAG:
+                        break;
+                    case XmlPullParser.TEXT:
+                        break;
+
+                }
+
+            }
 
         String text=(new BufferedReader(
                 new InputStreamReader(in,StandardCharsets.UTF_8)))
         .lines()
         .collect(Collectors.joining("\n"));
 
-        JSONObject theDocument=new JSONObject(text);
-//JSONArraytheArray=newJSONArray(text);
-
-        JSONObject coord=theDocument.getJSONObject("coord");
-        JSONArray weatherArray=theDocument.getJSONArray("weather");
-        JSONObject position0=weatherArray.getJSONObject(0);
-
-        String description=position0.getString("description");
-        String iconName=position0.getString("icon");
-//Stringdescription=position0.getString("description");
-//intvis=theDocument.getInt("visibility");
-//Stringname=theDocument.getString("name");
-
-        JSONObject mainObject=theDocument.getJSONObject("main");
-        double current=mainObject.getDouble("temp");
-        double min=mainObject.getDouble("temp_min");
-        double max=mainObject.getDouble("temp_max");
-        int humidity=mainObject.getInt("humidity");
 
         Bitmap image=null;
 
@@ -140,36 +183,44 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+
         Bitmap finalImage=image;
-        runOnUiThread(()->{
+            String finalCurrent = current;
+            String finalMin = min;
+            String finalMax = max;
+            String finalHumidity = humidity;
+            String finalDescription = description;
+            runOnUiThread(()->{
                 TextView tv=findViewById(R.id.temp);
-                tv.setText("Thecurrenttemperatureis"+current);
+                tv.setText("The current temperature is"+ finalCurrent);
                 tv.setVisibility(View.VISIBLE);
 
                 tv=findViewById(R.id.minTemp);
-                tv.setText("Themintemperatureis"+current);
+                tv.setText("The min temperature is"+ finalMin);
                 tv.setVisibility(View.VISIBLE);
 
                 tv=findViewById(R.id.maxTemp);
-                tv.setText("Themaxtemperatureis"+current);
+                tv.setText("The max temperature is"+ finalMax);
                 tv.setVisibility(View.VISIBLE);
 
                 tv=findViewById(R.id.humidity);
-                tv.setText("Thehumidityis"+humidity+"%");
+                tv.setText("The humidity is"+ finalHumidity +"%");
                 tv.setVisibility(View.VISIBLE);
 
                 tv=findViewById(R.id.description);
-                tv.setText(description);
+                tv.setText(finalDescription);
                 tv.setVisibility(View.VISIBLE);
 
                 ImageView iv=findViewById(R.id.icon);
                 iv.setImageBitmap(finalImage);
                 iv.setVisibility(View.VISIBLE);
-                });
 
-            }catch(IOException | JSONException ioe){
 
-                 Log.e("Connectionerror:",ioe.getMessage());
+                dialog.hide();
+                 });
+            }catch(IOException | XmlPullParserException ioe){
+
+                Log.e("Connection error:",ioe.getMessage());
                 }
             });
 
