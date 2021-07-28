@@ -1,12 +1,16 @@
 package algonquin.cst2335.chizhangandroidlabs;
 
 import android.app.Activity;
+import android.app.MediaRouteButton;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,9 +18,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -34,6 +40,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.BreakIterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -53,7 +60,10 @@ public class MainActivity extends AppCompatActivity {
  *thisholdstheeditTextasthepassword
  */
         EditText et= null;
-/**
+
+
+
+    /**
  *thisholdsthebuttonaslogin
  */
 
@@ -67,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
         TextView textview=findViewById(R.id.textView);
         EditText cityText=findViewById(R.id.cityTextField);
         Button forecastBtn=findViewById(R.id.forecastButton);
+
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
 
         forecastBtn.setOnClickListener(clk->{
 
@@ -225,6 +238,33 @@ public class MainActivity extends AppCompatActivity {
             });
 
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_actions, menu);
+    return true;
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch(item.getItemId()){
+            case R.id.hide_views:
+                currentTemp.setVisibility(View.INVISIBLE);
+                maxTemp.setVisibility(View.INVISIBLE);
+                minTemp.setVisibility(View.INVISIBLE);
+                humidity.setVisibility(View.INVISIBLE);
+                description.setVisibility(View.INVISIBLE);
+                icon.setVisibility(View.INVISIBLE);
+                cityField.setText("");
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }
