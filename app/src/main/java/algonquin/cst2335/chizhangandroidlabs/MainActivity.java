@@ -1,7 +1,6 @@
 package algonquin.cst2335.chizhangandroidlabs;
 
 import android.app.Activity;
-import android.app.MediaRouteButton;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,7 +39,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.BreakIterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -59,13 +57,20 @@ public class MainActivity extends AppCompatActivity {
 /**
  *thisholdstheeditTextasthepassword
  */
-        EditText et= null;
+        TextView currentTemp = null;
+        TextView minTemp = null;
+        TextView maxTemp = null;
+        TextView description = null;
+        TextView iconName = null;
+        TextView humidity = null;
+        EditText cityField = null;
 
-
-
+    EditText et= null;
     /**
  *thisholdsthebuttonaslogin
  */
+
+        ImageView icon = null;
 
 
 @RequiresApi(api= Build.VERSION_CODES.N)
@@ -74,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView textview=findViewById(R.id.textView);
-        EditText cityText=findViewById(R.id.cityTextField);
+        tv=findViewById(R.id.textView);
+        cityField=findViewById(R.id.cityTextField);
         Button forecastBtn=findViewById(R.id.forecastButton);
 
         Toolbar myToolbar = findViewById(R.id.toolbar);
@@ -83,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         forecastBtn.setOnClickListener(clk->{
 
-            String cityName=cityText.getText().toString();
+            String cityName=cityField.getText().toString();
 
             AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
                     .setTitle("getting forecast")
@@ -110,12 +115,13 @@ public class MainActivity extends AppCompatActivity {
         XmlPullParser xpp = factory.newPullParser();
         xpp.setInput( in  , "UTF-8");
 
-            String description = null;
+            String description1 = null;
             String iconName = null;
             String current = null;
             String min = null;
             String max = null;
-            String humidity = null;
+            String humidity1 = null;
+
 
             while(xpp.next()!=XmlPullParser.END_DOCUMENT){
 
@@ -134,13 +140,13 @@ public class MainActivity extends AppCompatActivity {
 
                         }else if(xpp.getName().equals("weather")){
 
-                            description = xpp.getAttributeValue(null, "value");  //this gets the weather description
+                            description1 = xpp.getAttributeValue(null, "value");  //this gets the weather description
 
                             iconName = xpp.getAttributeValue(null, "icon"); //this gets the icon name
 
                         }else if(xpp.getName().equals("humidity")){
 
-                            humidity = xpp.getAttributeValue(null, "value");
+                            humidity1 = xpp.getAttributeValue(null, "value");
 
                         }
 
@@ -196,37 +202,37 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-
         Bitmap finalImage=image;
             String finalCurrent = current;
             String finalMin = min;
             String finalMax = max;
-            String finalHumidity = humidity;
-            String finalDescription = description;
+            String finalHumidity = humidity1;
+            String finalDescription = description1;
             runOnUiThread(()->{
-                TextView tv=findViewById(R.id.temp);
-                tv.setText("The current temperature is"+ finalCurrent);
-                tv.setVisibility(View.VISIBLE);
 
-                tv=findViewById(R.id.minTemp);
-                tv.setText("The min temperature is"+ finalMin);
-                tv.setVisibility(View.VISIBLE);
+                currentTemp =findViewById(R.id.temp);
+                currentTemp.setText("The current temperature is"+ finalCurrent);
+                currentTemp.setVisibility(View.VISIBLE);
 
-                tv=findViewById(R.id.maxTemp);
-                tv.setText("The max temperature is"+ finalMax);
-                tv.setVisibility(View.VISIBLE);
+                minTemp=findViewById(R.id.minTemp);
+                minTemp.setText("The min temperature is"+ finalMin);
+                minTemp.setVisibility(View.VISIBLE);
 
-                tv=findViewById(R.id.humidity);
-                tv.setText("The humidity is"+ finalHumidity +"%");
-                tv.setVisibility(View.VISIBLE);
+                maxTemp=findViewById(R.id.maxTemp);
+                maxTemp.setText("The max temperature is"+ finalMax);
+                maxTemp.setVisibility(View.VISIBLE);
 
-                tv=findViewById(R.id.description);
-                tv.setText(finalDescription);
-                tv.setVisibility(View.VISIBLE);
+                humidity=findViewById(R.id.humidity);
+                humidity.setText("The humidity is"+ finalHumidity +"%");
+                humidity.setVisibility(View.VISIBLE);
 
-                ImageView iv=findViewById(R.id.icon);
-                iv.setImageBitmap(finalImage);
-                iv.setVisibility(View.VISIBLE);
+                description=findViewById(R.id.description);
+                description.setText((CharSequence) finalDescription);
+                description.setVisibility(View.VISIBLE);
+
+                icon =findViewById(R.id.icon);
+                icon.setImageBitmap(finalImage);
+                icon.setVisibility(View.VISIBLE);
 
 
                 dialog.hide();
@@ -251,8 +257,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        float oldSize = 14;
 
         switch(item.getItemId()){
+
             case R.id.hide_views:
                 currentTemp.setVisibility(View.INVISIBLE);
                 maxTemp.setVisibility(View.INVISIBLE);
@@ -262,6 +270,26 @@ public class MainActivity extends AppCompatActivity {
                 icon.setVisibility(View.INVISIBLE);
                 cityField.setText("");
                 break;
+            case R.id.id_increase:
+                oldSize++;
+                currentTemp.setTextSize(oldSize);
+                minTemp.setTextSize(oldSize);
+                maxTemp.setTextSize(oldSize);
+                humidity.setTextSize(oldSize);
+                description.setTextSize(oldSize);
+                cityField.setTextSize(oldSize);
+                break;
+
+            case R.id.id_decrease:
+                oldSize = Float.max(oldSize-1, 5);
+                currentTemp.setTextSize(oldSize);
+                minTemp.setTextSize(oldSize);
+                maxTemp.setTextSize(oldSize);
+                humidity.setTextSize(oldSize);
+                description.setTextSize(oldSize);
+                cityField.setTextSize(oldSize);
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }

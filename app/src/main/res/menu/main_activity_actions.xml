@@ -7,4 +7,14 @@
         android:icon="@drawable/clear"
         android:title="clear weather"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/id_increase"
+        android:icon="@drawable/increase"
+        android:title="increase font size"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/id_decrease"
+        android:icon="@drawable/decrease"
+        android:title="decrease font size "
+        app:showAsAction="always" />
 </menu>
