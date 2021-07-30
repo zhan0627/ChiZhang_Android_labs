@@ -19,9 +19,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
  */
 
         ImageView icon = null;
+    float oldSize = 14;
 
 
 @RequiresApi(api= Build.VERSION_CODES.N)
@@ -85,11 +90,29 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, myToolbar, R.string.open, R.string.close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.popout_menu);
+        navigationView.setNavigationItemSelectedListener((item) -> {
+
+            switch(item.getItemId()){
+
+            }
+
+                return false;
+
+        });
+
 
         forecastBtn.setOnClickListener(clk->{
 
             String cityName=cityField.getText().toString();
-
+            myToolbar.getMenu().add( 0, 5, 0, cityName).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            runForecast(cityName);
+            
             AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
                     .setTitle("getting forecast")
                     .setMessage("we're calling people in " + cityName + " to look outside their window and tell us what's weather like over there. ")
@@ -246,6 +269,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void runForecast(String cityName) {
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -257,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        float oldSize = 14;
+
 
         switch(item.getItemId()){
 
@@ -289,7 +315,10 @@ public class MainActivity extends AppCompatActivity {
                 description.setTextSize(oldSize);
                 cityField.setTextSize(oldSize);
                 break;
-
+            case 4:
+                String cityName = item.getTitle().toString();
+                runForecast(cityName);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
