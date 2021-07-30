@@ -23,6 +23,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
@@ -98,9 +99,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.popout_menu);
         navigationView.setNavigationItemSelectedListener((item) -> {
 
-            switch(item.getItemId()){
+            switch(item.getItemId()) {
 
             }
+            onOptionsItemSelected(item);
+            drawer.closeDrawer(GravityCompat.START);
 
                 return false;
 

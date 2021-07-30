@@ -2,4 +2,7 @@
     <string name="app_name">ChiZhang Android labs</string>
     <string name="hello_message">Hello world</string>
     <string name="button_message">I am a button</string>
+    <string name="open" translatable="false">Open</string>
+    <string name="close" translatable="false">Close</string>
+
 </resources>
